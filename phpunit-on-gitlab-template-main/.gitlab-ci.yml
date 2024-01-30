@@ -33,17 +33,22 @@ test:
       junit: phpunit-report.xml
     paths:
       - coverage.xml
-
+ 
 coverage:
   stage: coverage
   script:
     - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
     - phpunit --coverage-clover=coverage.xml
   
+sonarqube-check:
+  image: sonarsource/sonar-scanner-cli:latest
+  script:
+    - sonar-scanner
+
 sonarqube_scan:
   stage: sonarqube_scan
   script:
-    - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.0.2311-linux.zip
-    - unzip sonar-scanner-cli-4.6.0.2311-linux.zip
-    - export PATH=$PATH:$CI_PROJECT_DIR/sonar-scanner-cli-4.6.0.2311-linux/bin
-    - sonar-scanner -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.organization=jeremymartin87-1 -Dsonar.sources=src -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN -Dsonar.php.coverage.reportPaths=coverage.xml
+    - DownloadFile https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.0.2311-windows.zip -OutFile sonar-scanner-cli-4.6.0.2311-windows.zip
+    - Expand-Archive -Path sonar-scanner-cli-4.6.0.2311-windows.zip -DestinationPath $env:CI_PROJECT_DIR
+    - $env:PATH += ";$env:CI_PROJECT_DIR\sonar-scanner-cli-4.6.0.2311-windows\bin"
+    - sonar-scanner -Dsonar.projectKey=$env:CI_PROJECT_NAME -Dsonar.organization=jeremymartin87-1 -Dsonar.sources=src -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$env:SONAR_TOKEN -Dsonar.php.coverage.reportPaths=coverage.xml
