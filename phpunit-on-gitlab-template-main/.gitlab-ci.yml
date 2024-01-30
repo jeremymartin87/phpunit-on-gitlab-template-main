@@ -1,8 +1,14 @@
 image: php:8.0.12-cli
 
 cache:
+  key: "$CI_COMMIT_REF_NAME"
   paths:
     - vendor/
+    - .m2/repository
+    - target/
+
+variables:
+  SONAR_TOKEN: "989c7a1c5ab516c4f1f075255da3fa8d26d14c05"
 
 before_script:
   - test -d vendor || apt-get update -yqq
@@ -20,3 +26,9 @@ test:
     reports:
       junit: phpunit-report.xml
   
+sonarqube_scan:
+  script:
+    - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.0.2311-linux.zip
+    - unzip sonar-scanner-cli-4.6.0.2311-linux.zip
+    - export PATH=$PATH:$CI_PROJECT_DIR/sonar-scanner-cli-4.6.0.2311-linux/bin
+    - sonar-scanner -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.organization=jeremymartin87-1 -Dsonar.sources=src -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
