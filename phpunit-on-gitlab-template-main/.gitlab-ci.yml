@@ -3,6 +3,7 @@ image: php:8.0.12-cli
 stages:
   - test
   - coverage
+  - sonarqube_check
   - sonarqube_scan
 
 cache:
@@ -41,6 +42,7 @@ coverage:
     - phpunit --coverage-clover=coverage.xml
   
 sonarqube-check:
+  stage: sonarqube_check
   image: sonarsource/sonar-scanner-cli:latest
   script:
     - sonar-scanner
