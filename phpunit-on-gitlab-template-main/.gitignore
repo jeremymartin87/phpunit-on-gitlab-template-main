@@ -1,0 +1,5 @@
+bin/
+vendor/
+.phpunit.cache
+composer-setup.php
+phpunit-report.xml
